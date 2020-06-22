@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+private.key
+nexmo.code-workspace
+.vscode/
