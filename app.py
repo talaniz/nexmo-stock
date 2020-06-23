@@ -5,16 +5,46 @@ import time
 from urllib.parse import parse_qs
 
 from alpha_vantage.timeseries import TimeSeries
+from dotenv import load_dotenv
 from flask import Flask, request
 import nexmo
 import redis
 from rq import Queue
 
+load_dotenv()
 
 app = Flask(__name__)
 
 r = redis.Redis()
 q = Queue(connection=r)
+
+client = nexmo.Client(application_id=os.getenv('APPLICATION_ID'),
+                      private_key=os.getenv('PRIVATE_KEY_PATH'),)
+
+def send_voice_call(msg, number):
+    """Send the stock info to the recipient."""
+
+    print("Calling {} with message {}".format(number, msg))
+    ncco = [
+        {
+            'action': 'talk',
+            'voiceName': 'Joey',
+            'text': msg
+        }
+    ]
+
+    response = client.create_call({
+        'to': [{
+            'type': 'phone',
+            'number': number
+        }],
+        'from': {
+            'type': 'phone',
+            'number': os.getenv('NEXMO_PHONE_NUMBER') # this will need to be an environment variable
+        },
+        'ncco': ncco
+    })
+
 
 
 def get_stock_symbol(query_string):
@@ -25,7 +55,7 @@ def get_stock_symbol(query_string):
     msg = query_string['text'][0]
 
     print("Processing request for: {}".format(msg))
-    r = requests.get(QUERY_STRING.format(msg, os.environ['ALPHA_VANTAGE_API']))
+    r = requests.get(QUERY_STRING.format(msg, os.getenv('ALPHA_VANTAGE_API')))
     matches = json.loads(r.content)['bestMatches']
     print(matches)
     best_match = matches[0]
@@ -37,7 +67,7 @@ def get_stock_symbol(query_string):
 def get_stock_data(symbol):
     """Get intraday stock data for the requested symbol."""
 
-    ts = TimeSeries(key=os.environ['ALPHA_VANTAGE_API'])
+    ts = TimeSeries(key=os.getenv('ALPHA_VANTAGE_API'))
     data, _ = ts.get_intraday(symbol)
 
     dates = list(data.keys())
@@ -55,31 +85,18 @@ def get_voice_message(stock_data):
 
     return msg
 
-def background_task(n):
+def process_request(query_string):
     """ Function that returns len(n) and simulates a delay """
 
-    delay = 2
+    query_string = parse_qs(query_string)
+    phone_id = query_string['msisdn'][0]
+    symbol, name = get_stock_symbol(query_string)
+    stock_data = get_stock_data(symbol)
+    voice_msg = "Hello, here is the requested information for {}".format(name)
+    voice_msg += get_voice_message(stock_data)
+    print(voice_msg)
 
-    print("Task running")
-    print(f"Simulating a {delay} second delay")
-
-    time.sleep(delay)
-
-    print(len(n))
-    print("Task complete")
-
-    return len(n)
-
-@app.route("/task")
-def index():
-
-    if request.args.get("n"):
-
-        job = q.enqueue(background_task, request.args.get("n"))
-
-        return f"Task ({job.id} added to queue at {job.enqueued_at}"
-
-    return "No value for count provided"
+    send_voice_call(voice_msg, phone_id)
 
 # Receive incoming events
 @app.route("/answer", methods=['POST'])
@@ -114,14 +131,11 @@ def inbound():
 
     print("called inbound!")
     query_string = request.get_data().decode('ascii')
-    print("Message Request: {}".format(query_string))
+    print("Enqueuing job with query string: {}".format(query_string))
 
-    query_string = parse_qs(query_string)
-    phone_id = query_string['msisdn']
-    symbol, name = get_stock_symbol(query_string)
-    stock_data = get_stock_data(symbol)
-    voice_msg = "Hello, here is the requested information for {}".format(name)
-    voice_msg += get_voice_message(stock_data)
+    job = q.enqueue(process_request, query_string)
+
+    print(f"Task {job.id} added to queue at {job.enqueued_at}")
 
     return 'OK'
 

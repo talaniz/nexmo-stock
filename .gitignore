@@ -131,3 +131,4 @@ dmypy.json
 private.key
 nexmo.code-workspace
 .vscode/
+.env
