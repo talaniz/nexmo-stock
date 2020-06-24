@@ -1,6 +1,6 @@
 # nexmo-stock
 Send a text message to your registered Vonage phone number and receive a text-to-voice call with the latest
-stock information. 
+stock information. Handles webhooks to receive incoming text messages and outgoing phone call events.
 
 ## Prerequisites
 
@@ -8,7 +8,7 @@ Before installing, you will need the following:
 
 A [new application](https://developer.nexmo.com/application/overview#creating-applications) from developer.nexmo.com with voice capabilities.
 
-Configure a [new number](https://developer.nexmo.com/numbers/guides/number-management#configure-a-virtual-number) and link it to your application.
+Configure a [new number](https://developer.nexmo.com/numbers/guides/number-management#rent-a-virtual-number) and link it to your application.
 
 An [Alpha Advantage free API key](https://www.alphavantage.co/support/#api-key).
 
