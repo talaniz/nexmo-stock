@@ -22,9 +22,9 @@ For local development, [ngrok](https://ngrok.com/) running locally
 
 ## Set up
 
-Fill in the .env-example file with the API information above and rename to .env.
+Fill in the .env-example file with the API information, private key, phone number and application ID, rename to .env.
 
-Add event and answer URLs to your Vonage application
+Add event and answer URLs to your Vonage application:
 
 * Add the `${NGROK_URL}/inbound` and `${NGROK_URL}/delivery` urls to your account in the [Default SMS Setting](https://dashboard.nexmo.com/settings).
 
