@@ -30,13 +30,13 @@ Add event and answer URLs to your Vonage application:
 
 * Add the `${NGROK_URL}/answer` and `${NGROK_URL}/event` urls to your application settings under voice capabilities.
 
-Clone the repository and create a python virtualenv
+Clone the repository
 
     $ git clone git@github.com:talaniz/vonage-stock.git && cd vonage-stock
 
 Create a virtualenv and install requirements
 
-    $ virtualenv -p $(which python3) nexmo-stock
+    $ virtualenv -p $(which python3) nexmo-stock && source nexmo-stock/bin/activate
     ...created virtual environment
     $ pip install -r requirements.txt
 
