@@ -84,9 +84,10 @@ def get_voice_message(stock_data):
     msg = ""
     for k, v in stock_data.items():
         # so the message isn't rushed
-        msg += "<break time='1s' /> {} {} <break time='1s' />".format(k[2:], v)
+        msg += "<break time='45ms' /> {} <break time='30ms' /> {} <break time='45ms' />".format(
+            k[2:], v)
 
-    msg += "thank you for using the nexmo stock application. Goodbye."
+    msg += "thank you for using the nexmo stock application. Goodbye.</speak>"
     return msg
 
 def process_request(query_string):
@@ -98,7 +99,7 @@ def process_request(query_string):
     stock_data = get_stock_data(symbol)
     voice_msg = "<speak>Hello, here is the requested information for {}".format(
         name)
-    voice_msg += get_voice_message(stock_data) + "</speak>"
+    voice_msg += get_voice_message(stock_data)
     print(voice_msg)
 
     send_voice_call(voice_msg, phone_id)
