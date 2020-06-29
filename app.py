@@ -40,10 +40,12 @@ def send_voice_call(msg, number):
         }],
         'from': {
             'type': 'phone',
-            'number': os.getenv('NEXMO_PHONE_NUMBER') # this will need to be an environment variable
+            'number': os.getenv('NEXMO_PHONE_NUMBER')
         },
         'ncco': ncco
     })
+
+    print(response)
 
 
 

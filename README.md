@@ -49,8 +49,8 @@ Start the rq worker application
 In another terminal, start the application
 
     $ cd /path/to/nexmo-stock && source bin/activate
-    $ export FLASK_APP=run.py
-    $ export FLASK_ENV = development
+    $ export FLASK_APP=app.py
+    $ export FLASK_ENV=development
     $ flask run
     * Serving Flask app "app.py" (lazy loading)
     ...
