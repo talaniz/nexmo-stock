@@ -84,7 +84,7 @@ def get_voice_message(stock_data):
     msg = ""
     for k, v in stock_data.items():
         # so the message isn't rushed
-        msg += "<break time='45ms' /> {} <break time='30ms' /> {} <break time='45ms' />".format(
+        msg += "<break time='45ms' /> {} <break time='30ms' /> {}".format(
             k[2:], v)
 
     msg += "thank you for using the nexmo stock application. Goodbye.</speak>"
